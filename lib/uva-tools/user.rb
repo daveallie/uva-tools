@@ -1,5 +1,13 @@
 module UVaTools
   class User
+    def self.load(username)
+      if File.directory?(UVaTools::USER_SAVE_LOCATION) && File.exists?("#{UVaTools::USER_SAVE_LOCATION}/#{username}")
+        Marshal.load(File.binread("#{UVaTools::USER_SAVE_LOCATION}/#{username}"))
+      else
+        nil
+      end
+    end
+
     def initialize(username)
       @username = username
     end
@@ -33,6 +41,12 @@ module UVaTools
       @solved = nil
       @unsolved = nil
       self
+    end
+
+    def save
+      FileUtils::mkdir_p UVaTools::USER_SAVE_LOCATION
+      File.open("#{UVaTools::USER_SAVE_LOCATION}/#{@username}", 'w') {|f| f.write(Marshal.dump(self))}
+      true
     end
 
     private
@@ -75,6 +89,14 @@ module UVaTools
 
     def unsolved_pids
       UVaTools.problems.map(&:id) - solved_pids
+    end
+
+    def marshal_load array
+      @uid, @username, @solved_pids = array
+    end
+
+    def marshal_dump
+      [uid, @username, solved_pids]
     end
   end
 end

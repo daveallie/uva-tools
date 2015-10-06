@@ -1,4 +1,8 @@
 module UVaTools
+  ROOT_DIR = "#{ENV['HOME']}/uva-tools"
+  SAVE_LOCATION = "#{ROOT_DIR}/save"
+  USER_SAVE_LOCATION = "#{ROOT_DIR}/save/user"
+
   class << self
     def problems
       problem_hash.values
@@ -14,13 +18,30 @@ module UVaTools
       h
     end
 
+    def save
+      FileUtils::mkdir_p UVaTools::SAVE_LOCATION
+      File.open("#{UVaTools::SAVE_LOCATION}/problems", 'w') {|f| f.write(Marshal.dump(problem_hash))}
+      true
+    end
+
+    def load
+      if File.directory?(UVaTools::SAVE_LOCATION) && File.exists?("#{UVaTools::SAVE_LOCATION}/problems")
+        @@problems = Marshal.load(File.binread("#{UVaTools::SAVE_LOCATION}/problems"))
+        true
+      else
+        false
+      end
+    end
+
     def download_multiple(prob_nums, worker_count = 4)
       to_download = Array(prob_nums).map do |prob_num|
         problems_by_number[prob_num]
       end
 
-      if to_download.length > 0
-        worker_count = [worker_count, to_download.length].min
+      length = to_download.length
+
+      if length > 0
+        worker_count = [worker_count, length].min
         workers = []
 
         worker_count.times do
@@ -34,20 +55,18 @@ module UVaTools
         finished = 0
 
         loop do
-          break if finished >= to_download.size
+          break if finished >= length
 
           ready = IO.select(reads, writes)
 
           ready[0].each do |readable|
-            data = Marshal.load(readable)
-            # assets.merge! data["assets"]
-            # files.merge! data["files"]
-            # paths_with_errors.merge! data["errors"]
+            number = Marshal.load(readable)
             finished += 1
+            puts "(#{finished}/#{length}) Finished: #{number}"
           end
 
           ready[1].each do |write|
-            break if index >= to_download.size
+            break if index >= length
 
             Marshal.dump(index, write)
             index += 1

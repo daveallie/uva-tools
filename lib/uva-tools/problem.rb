@@ -89,10 +89,8 @@ module UVaTools
             end
           end
         end
-        puts "downloaded: #{number}"
         true
       else
-        puts "#{number} was already downloaded"
         false
       end
     end
@@ -106,9 +104,9 @@ module UVaTools
             end
           end
         end
-        puts "removed #{number}"
+        true
       else
-        puts "#{number} wasn't downloaded"
+        false
       end
     end
 
@@ -116,9 +114,27 @@ module UVaTools
       File.directory?(dir_name) && (File.exists?("#{dir_name}/#{number}.html") || File.exists?("#{dir_name}/#{number}.pdf"))
     end
 
+    def open
+      if f_path = path
+        `open #{f_path}`
+        true
+      else
+        puts "Problem not downloaded!"
+        false
+      end
+    end
+
     private
     def dir_name
-      "#{ENV['HOME']}/uva-tools/#{number/100}"
+      "#{UVaTools::ROOT_DIR}/#{number/100}"
+    end
+
+    def path
+      if downloaded?
+        "#{dir_name}/#{number}.#{File.exists?("#{dir_name}/#{number}.html") ? 'html' : 'pdf'}"
+      else
+        nil
+      end
     end
   end
 end
