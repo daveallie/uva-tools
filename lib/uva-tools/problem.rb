@@ -114,7 +114,7 @@ module UVaTools
       File.directory?(dir_name) && (File.exists?("#{dir_name}/#{number}.html") || File.exists?("#{dir_name}/#{number}.pdf"))
     end
 
-    def open
+    def open_problem
       if f_path = path
         `open #{f_path}`
         true
