@@ -1,7 +1,7 @@
 module UVaTools
   ROOT_DIR = "#{ENV['HOME']}/uva-tools"
   SAVE_LOCATION = "#{ROOT_DIR}/save"
-  USER_SAVE_LOCATION = "#{ROOT_DIR}/save/user"
+  USER_SAVE_LOCATION = "#{SAVE_LOCATION}/user"
 
   class << self
     def problems
