@@ -24,20 +24,20 @@
 
 module UVaTools
   class Problem
-    def initialize(array)
-      @info = array
+    def initialize(a)
+      @info = {
+        id: a[0],
+        number: a[1],
+        title: a[2],
+        dacu: a[3],
+        submitted: a[6..18].inject(:+),
+        accepted: a[18],
+        run_time: a[19]
+      }
     end
 
-    def id
-      @info[0]
-    end
-
-    def number
-      @info[1]
-    end
-
-    def title
-      @info[2]
+    def info_raw
+      @info
     end
 
     def info
@@ -45,20 +45,8 @@ module UVaTools
         id: id,
         number: number,
         title: title,
-        run_time: @info[19]
+        run_time: run_time
       }
-    end
-
-    def submitted
-      @info[6..18].inject(:+)
-    end
-
-    def accepted
-      @info[18]
-    end
-
-    def dacu
-      @info[3]
     end
 
     def submission_info
@@ -134,6 +122,14 @@ module UVaTools
         "#{dir_name}/#{number}.#{File.exists?("#{dir_name}/#{number}.html") ? 'html' : 'pdf'}"
       else
         nil
+      end
+    end
+
+    def method_missing(method_name, *args, &block)
+      if @info.has_key? method_name
+        @info[method_name]
+      else
+        super(method_name, *args, &block)
       end
     end
   end
