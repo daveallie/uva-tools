@@ -13,9 +13,7 @@ module UVaTools
     end
 
     def problems_by_id
-      h = {}
-      problem_hash.values.each{ |p| h[p.id] = p }
-      h
+      @problems_by_id ||= problems.map{ |p| [p.id, p] }.to_h
     end
 
     def save
