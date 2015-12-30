@@ -57,6 +57,14 @@ module UVaTools
       }
     end
 
+    def percent_accepted
+      if accepted.zero? || submitted.zero?
+        0
+      else
+        100.0 * accepted / submitted
+      end
+    end
+
     def download
       unless downloaded?
         FileUtils::mkdir_p dir_name
